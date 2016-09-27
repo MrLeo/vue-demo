@@ -1,0 +1,189 @@
+@CHARSET "utf-8";
+/*
+* @Author: Meta
+* @Date:   2016-04-28 17:40:41
+* @Last Modified by:   liuyuanyuan
+* @Last Modified time: 2016-07-25 18:23:30
+*/
+*{
+	margin:0;padding:0;
+	-webkit-tap-highlight-color:rgba(0,0,0,0);
+	-webkit-text-size-adjust:100%;
+	-webkit-user-select:none;
+    font-weight:normal;
+    font-style:normal;
+    box-sizing:border-box;
+	-webkit-box-sizing:border-box; /* Safari */
+    -moz-box-sizing:border-box; /* Firefox */
+	-ms-text-size-adjust: 100%;
+	-ms-user-select:none;
+	user-select:none;
+	-webkit-overflow-scrolling: touch;
+}
+::-webkit-search-cancel-button { display: none;}
+html{font:20px/1.25'微软雅黑',Arial,sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;}
+body,p,form,input,button,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6{margin:0;padding:0;overflow-x:hidden;}
+h1,h2,h3,h4,h5,h6{font-size:100%;}
+input,textarea,select{-webkit-user-select:text;-ms-user-select:text;user-select:text;-webkit-appearance:none;}
+textarea{resize:none;}
+table{border-collapse:collapse;}
+input,select,textarea{outline:none;border:none;background:none;font-size:0.7rem;font-family:"微软雅黑"}
+a{text-decoration:none;-WebKit-touch-callout:none;outline:0;cursor:pointer;color:#666;}
+em,i{font-style:normal;}
+li,ol{list-style:none;}
+.clearfix{*zoom:1;}
+.clearfix:after{display:block;overflow:hidden;clear:both;height:0;visibility:hidden;content:".";}
+body{margin:0 auto;width:100%;background-color:#f4f4f4;color:#666;font-size:0.7rem;}
+img{border:none;width:100%;vertical-align:top;}
+::-webkit-scrollbar{width: 0;height: 0;}
+::-webkit-scrollbar-track {background-color: transparent;} /* 滚动条的滑轨背景颜色 */
+::-webkit-scrollbar-thumb {background-color: transparent;} /* 滑块颜色 */
+::-webkit-scrollbar-button {background-color: transparent;} /* 滑轨两头的监听按钮颜色 */
+::-webkit-scrollbar-corner {background-color: transparent;} /* 横向滚动条和纵向滚动条相交处尖角的颜色 */
+/*公共样式*/
+.fl{float:left;}
+.fr{float:right;}
+.txtalign-l{text-align: left !important;}
+.txtalign-c{text-align: center !important;}
+.txtalign-r{text-align: right !important;}
+.m-top{margin-top: 1rem!important;}
+.bg-fff{background-color:#fff;}
+.s-m-top{margin-top: 0.5rem!important;}
+.m-r{margin-right:1rem!important;}
+.s-m-r{margin-right:0.5rem!important;}
+.line-top{border-top: 1px solid #E1E1E1;}
+.line-bottom{border-bottom: 1px solid #E1E1E1;}
+.hide{display:none;}
+.show{display:block;}
+.text{font-size:0.6rem!important;}
+.red{color:#fa4619!important;}
+
+.dest_header{width: 100%;height:2.2rem;line-height: 2.2rem;background-color: #FFAF00;font-weight: normal;font-size: 0.75rem;position: relative;color:#000;}
+.icon_arrow_l,.icon_arrow_b,.icon_arrow_c{width: 2.2rem;height: 2.2rem;background-position: 0 0;position: absolute;top: 0.05rem;left: 0;-webkit-background-size: 100%;background-size: 100%;background-image: url('../../img/back.png');}
+.dest_header > .submit-btn{position:absolute;padding:0 0.75rem;font-size:0.8;right:0;top:0}
+.righthide{position:absolute;left:0;width:100%;top:0;bottom:0;right:0;overflow:hidden;background:#f4f4f4;transform:translate(100%,0px) translateZ(0);z-index:999;}
+.righthide .wrap{padding-bottom:2.4rem;transform: translate(0px, 0px) translateZ(0);}
+.no-data-img {position: absolute;left: 50%;top: 50%;margin-top: -2rem;margin-left: -1.75rem;width: 3.5rem;height: 3.5rem;}
+.no-data-desc {position: absolute;top: 50%;width: 100%;text-align: center;margin-top: 2rem;}
+.jx-tip{display:none;position:fixed;bottom:2rem;font-size:0.7rem;line-height:2;background:rgba(0,0,0,0.8);color:#fff;border-radius:0.2rem;padding:0.4rem 0.6rem;z-index:9999;}
+/*alert*/
+#pagemask{display:none;position:absolute;background:rgba(0,0,0,0.8);left:0;top:0;bottom:0;right:0;z-index:9998;}
+#model-box {background:rgba(0,0,0,0.3);position: fixed;top:0; left: 0; right: 0; bottom: 0;z-index: 9998 }
+#model-box .model-main { width: 14rem; height: auto; background: #fff; border: 1px solid #ccc; box-shadow: 1px 2px 3px #999;position: absolute; top:0; left: 0; }
+#model-box .model-main .content { padding: 1rem; padding-bottom: 0; line-height:2;text-align: center; font-size: 0.8rem; color: #222}
+#model-box .model-main .confirm { text-align: center; margin: 1rem; }
+#model-box .model-main button { width: 4rem; text-align: center; background: #ffaf00; border: none; padding: 0.4rem; margin: 0 0.5rem;}
+#page-package{position:absolute;left:0;top:0;bottom:0;right:0;overflow:hidden;background:#f4f4f4;z-index:1001;}
+#page-package .wrap,
+#page-orderpay .wrap{padding-bottom: 2.4rem;}
+#page-calendar .wrap{padding-bottom:0;}
+#page-addVisitor { z-index:999}
+
+.page-in{-webkit-transition: -webkit-transform 400ms;-webkit-transform: translate3d(0,0,0);}
+.page-left-out{-webkit-transition:-webkit-transform 400ms;-webkit-transform: translate3d(-100%,0,0);}
+.page-right-out{-webkit-transition:-webkit-transform 400ms;-webkit-transform: translate3d(100%,0,0);}
+
+
+/* 使用浏览器打开 */
+.openBrowser { position: absolute; z-index: 9999999; background: #363636 url(../../img/springboard.jpg) 0 0 no-repeat; top: 0; left: 0; right: 0; bottom: 0; -webkit-background-size: 100%;
+background-size: 100%; }
+/*顶部logo打开下载app*/
+.download_mask{
+   position: fixed;
+   top:0;
+   width: 100%;
+   height: 2.5rem;
+   background-color: rgba(0,0,0,0.65);
+   padding:0.4rem 0.75rem;
+   z-index: 999999;
+   display: none;
+}
+.download_masks { height: 2.5rem; }
+/*-------提示下载部分-------------*/
+.download_mask .logo{
+    width: 4.8rem;
+    border-radius: 0.2rem;
+}
+.download_btn{
+    position: absolute;
+    right:0.75rem;
+    top:0.6rem;
+    width: 3rem;
+    height:1.4rem;
+    line-height: 1.4rem;
+    border-radius: 0.2rem;
+    border: 1px solid #fff;
+    text-align:center;
+}
+.download_btn a{
+    display: block;
+    width: 100%;
+    height: 100%;
+    color:#fff;
+    font-size: 0.55rem;
+}
+
+/*下载二*/
+.show-go-download-div{
+	position: fixed;
+    top: 0rem;
+    width: 100%;
+    height: 100%;
+    padding: 0 0.5rem;
+    background: rgba(0,0,0,0.3);
+    text-align: center;
+    padding-top:6rem ;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    z-index: 999;
+    display: none;
+}
+.show-go-download{
+	border-radius: 0.3rem;
+	background: url('../../img/show-download-bg.png') no-repeat center center;
+	background-size: 100%;
+	height: 16.3rem;
+}
+.go-pic{
+	height: 7.5rem;
+}
+.go-desc{
+	text-align: center;
+	font-size: 0.8rem;
+	margin-bottom: 1.5rem;
+	margin-top: 1.5rem;
+	color: #000;
+}
+.go-btn{
+	text-align: center;
+	margin-top: 0.3rem;
+	margin-bottom: 0.3rem;
+	height: 3.5rem;
+}
+.go-pic-close{
+	width: 0.8rem;
+	height: 0.8rem;
+	float: right;
+	margin-top:0.2rem;
+	margin-right: 1.05rem;
+}
+/*-------------------------------------------------------------*/
+@media screen and (min-width: 320px) {html{font-size:106.6666%;}}
+@media screen and (min-width: 360px) {html{font-size:120%;}}
+@media screen and (min-width: 375px) {html{font-size:125%;}}
+@media screen and (min-width: 400px) {html{font-size:133.3333%;}}
+@media screen and (min-width: 414px) {html{font-size:138%;}}
+@media screen and (min-width: 440px) {html{font-size:146.6666%;}}
+@media screen and (min-width: 480px) {html{font-size:160%;}}
+@media screen and (min-width: 520px) {html{font-size:173.3333%;}}
+@media screen and (min-width: 560px) {html{font-size:186.6666%;}}
+@media screen and (min-width: 600px) {html{font-size:200%;}}
+@media screen and (min-width: 640px) {html{font-size:213.3333%;}}
+@media screen and (min-width: 680px) {html{font-size:226.6666%;}}
+@media screen and (min-width: 720px) {html{font-size:240%;}}
+@media screen and (min-width: 760px) {html{font-size:253.3333%;}}
+@media screen and (min-width: 800px) {html{font-size:266.6666%;}}
+@media screen and (min-width: 1200px) {html{font-size:400%;}}
+@media screen and (min-width: 1280px) {html{font-size:426.6666%;}}
+
+
