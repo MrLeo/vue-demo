@@ -1,0 +1,52 @@
+{
+  "status": 0,
+  "src": "http://record2.a8.com/mp4/1472734874787582.mp4",
+  "poster": "/static/img/logo_default.png",
+  "online": "100",
+  "room": "101",
+  "title": "热带云南8天7晚，2015穿越北北回归线",
+  "photo": "/static/img/tou_xiang.png",
+  "liver": "王璐岢",
+  "focus": "20",
+  "fans": "100",
+    "replay":[{
+        "img":"/static/img/logo_default_s.jpg",
+        "state":"1",
+        "liver":"xxx",
+        "viewer":"1000",
+        "title":"123456qwerty"
+    },{
+        "img":"/static/img/logo_default_s.jpg",
+        "state":"1",
+        "liver":"xxx2",
+        "viewer":"1000",
+        "title":"123456qwerty"
+    },{
+        "img":"/static/img/logo_default_s.jpg",
+        "state":"1",
+        "liver":"xxx3",
+        "viewer":"1000",
+        "title":"123456qwerty"
+    },{
+        "img":"/static/img/logo_default_s.jpg",
+        "state":"1",
+        "liver":"xxx",
+        "viewer":"1000",
+        "title":"123456qwerty"
+    }],
+    "wonderfulList":[{
+        "id":"111111",
+        "img":"/static/img/logo_default_s.jpg",
+        "state":"直播",
+        "liver":"AAA",
+        "viewer":"1000",
+        "title":"123456qwerty"
+    },{
+        "id":"2222222",
+        "img":"/static/img/logo_default_s.jpg",
+        "state":"回放",
+        "liver":"bbb",
+        "viewer":"1000",
+        "title":"123456qwerty"
+    }]
+}
