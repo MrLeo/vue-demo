@@ -63,10 +63,7 @@
                      srcs.push(url)
                      }*/
                     _self.videoPlayer.src(val)
-                    _self.videoPlayer.controls(false);
-                    if (!!_self.videoControls) {
-                        _self.videoPlayer.controls(true);
-                    }
+                    _self.setVideoControlBar(_self.videoPlayer)
                     _self.videoPlayer.play()
                 } else {
                     /*console.log('ready',_self.videoSrc[0],/\.m3u8\??/.test(_self.videoSrc[0]))
@@ -96,10 +93,9 @@
                 }
                 console.log('[Leo]视频地址 => ', srcs)
                 _self.videoPlayer.src(srcs)
-                _self.videoPlayer.controls(false);
-                if (!!_self.videoControls) {
-                    _self.videoPlayer.controls(true);
-                }
+
+                _self.setVideoControlBar(_self.videoPlayer)
+
                 _self.videoPlayer.play()
             } else {
                 /*console.log('ready',_self.videoSrc[0],/\.m3u8\??/.test(_self.videoSrc[0]))
@@ -123,6 +119,7 @@
                     /**
                      * Video.js配置API
                      * 官方API：http://docs.videojs.com/
+                     * https://github.com/videojs/video.js/blob/stable/docs/guides/options.md
                      * http://coderlt.coding.me/2016/02/26/videojs-readme/
                      */
                         //videojs.options.flash.swf = require('video.js/dist/video-js.swf')
@@ -133,10 +130,42 @@
                         techOrder: ["html5", "flash"], //["flash", "html5"], //
                         controls: true, //控制栏
                         inactivityTimeout: 0,
-                        autoplay: false, //自动播放
+                        autoplay: true, //自动播放
                         preload: "auto", //预加载
                         loop: true //循环播放
-                        //poster: require('assets/img/logo_default.png') //视频海报
+                        //poster: require('assets/img/logo_default.png'), //视频海报
+                        /*children: {
+                         posterImage: false,
+                         textTrackDisplay: false,
+                         loadingSpinner: false,
+                         bigPlayButton: false,
+                         controlBar: {
+                         playToggle: false,
+                         fullscreenToggle: false,
+                         volumeMenuButton: false,
+                         currentTimeDisplay: false,
+                         timeDivider: false,
+                         durationDisplay: false,
+                         remainingTimeDisplay: false,
+                         liveDisplay: false,
+                         customControlsSpacer: false,
+                         chaptersButton: false,
+                         subtitlesButton: false,
+                         captionsButton: false,
+                         MuteToggle: false,
+                         progressControl: {
+                         keepTooltipsInside: false,
+                         seekBar: {
+                         loadProgressBar: false,
+                         playProgressBar: false,
+                         seekHandle: false,
+                         mouseTimeDisplay: false
+                         }
+                         }
+                         },
+                         errorDisplay: false,
+                         textTrackSettings: false
+                         }*/
                     });
 
                     /**
@@ -168,30 +197,7 @@
                         thisPlayer.fluid(false);
                         thisPlayer.isFullscreen(false);
 
-                        //console.log('%c[Leo]controlBar=>', 'color:red', thisPlayer.controlBar)
-                        //thisPlayer.controls(true);
-                        //thisPlayer.controlBar.captionsButton.show()//字幕
-                        //thisPlayer.controlBar.chaptersButton.show()//播放列表
-                        //thisPlayer.controlBar.fullscreenToggle.show()//全屏
-                        thisPlayer.controlBar.progressControl.show()//播放进度
-                        thisPlayer.controlBar.timeDivider.show()//时间分隔
-                        thisPlayer.controlBar.remainingTimeDisplay.show()//剩余时间
-                        thisPlayer.controlBar.playToggle.show()//播放
-                        thisPlayer.controlBar.volumeMenuButton.show()//静音
-                        $('.vjs-volume-menu-button-horizontal').show()
-
-                        if (!_self.videoControls) {
-                            //thisPlayer.controls(false);
-                            //thisPlayer.controlBar.captionsButton.hide()
-                            //thisPlayer.controlBar.chaptersButton.hide()
-                            //thisPlayer.controlBar.fullscreenToggle.hide()
-                            thisPlayer.controlBar.progressControl.hide()
-                            thisPlayer.controlBar.timeDivider.hide()
-                            thisPlayer.controlBar.remainingTimeDisplay.hide()
-                            thisPlayer.controlBar.playToggle.hide()
-                            thisPlayer.controlBar.volumeMenuButton.hide()
-                            $('.vjs-volume-menu-button-horizontal').hide()
-                        }
+                        _self.setVideoControlBar(thisPlayer)
 
                         //thisPlayer.muted(true);
 
@@ -234,6 +240,38 @@
                         console.log('视频播放结束')
                     })
                 });
+            },
+            setVideoControlBar(player){
+                let _self = this
+                console.log('[Leo]show controls => ', _self.videoControls)
+                //console.log('%c[Leo]controlBar=>', 'color:red', player.controlBar)
+                player.controlBar.fullscreenToggle.show()//全屏
+                player.controlBar.liveDisplay.hide()//直播标识
+                player.controlBar.chaptersButton.hide()//播放列表
+                player.controlBar.captionsButton.hide()//字幕
+                player.controlBar.audioTrackButton.hide()//音轨
+                player.controlBar.customControlSpacer.hide()
+                player.controlBar.descriptionsButton.hide()
+                player.controlBar.durationDisplay.hide()
+                if (_self.videoControls) {
+                    //player.controls(true);
+                    player.controlBar.progressControl.show()//播放进度
+                    player.controlBar.timeDivider.show()//时间分隔
+                    player.controlBar.remainingTimeDisplay.show()//剩余时间
+                    player.controlBar.playToggle.show()//播放
+                    player.controlBar.volumeMenuButton.show()//静音
+                    $('.vjs-volume-menu-button-horizontal').show()
+                    $('.vjs-control-bar').css({"justify-content": "space-between"})
+                } else {
+                    //player.controls(false);
+                    player.controlBar.progressControl.hide()
+                    player.controlBar.timeDivider.hide()
+                    player.controlBar.remainingTimeDisplay.hide()
+                    player.controlBar.playToggle.hide()
+                    player.controlBar.volumeMenuButton.hide()
+                    $('.vjs-volume-menu-button-horizontal').hide()
+                    $('.vjs-control-bar').css({"justify-content": "flex-end"})
+                }
             }
         }
     }
@@ -282,7 +320,8 @@
     }
 
     /* Video.js Controls Style Overrides */
-    /*.vjs-default-skin .vjs-fullscreen-control {*/
-    /*display: none;*/
-    /*}*/
+    .vjs-live-control,
+    .vjs-captions-button {
+        display: none !important;
+    }
 </style>

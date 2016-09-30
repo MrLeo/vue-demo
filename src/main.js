@@ -15,7 +15,12 @@ Vue.use(infiniteScroll)//无限滚动 https://github.com/ElemeFE/vue-infinite-sc
 Vue.use(filter)//自定义过滤器
 
 /**
- * 路由
+ * VueResource配置
+ */
+//Vue.http.options.xhr = {withCredentials: true}
+
+/**
+ * 路由配置
  * @type {Router}
  */
 Vue.config.debug = true//开启debug模式

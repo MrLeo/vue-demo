@@ -45,6 +45,7 @@ export default {
                 success: function (res) {
                     if (!res) {
                         jx_common.tip("api无数据返回");
+                        //reject()
                         return;
                     }
                     if (res["stat"]["code"] == "-160" || res["stat"]["code"] == "-360") {
@@ -58,12 +59,14 @@ export default {
                         }
                         if (noLoginCallback && typeof noLoginCallback == "function") {
                             noLoginCallback();
+                            //reject()
                             return false;
                         }
                         if (jx_common.isInJXApp()) {
                             jx_common_app.openAppLogin();
                         } else {
                             jx_common.tip("token失效重新登录");
+                            //reject()
                             window.setTimeout(function () {
                                 jx_common.openUrl("../../view/login/login.html?returnUrl=" + encodeURIComponent(window.location.href));
                             }, 1000);
@@ -72,20 +75,23 @@ export default {
                     }
                     if (res["stat"]["code"] == "-260") {
                         jx_common.tip("请输入正确验证码");
+                        //reject()
                         return;
                     }
                     if (res["stat"]["code"] != 0) {
                         jx_common.tip("api错误(" + res["stat"]["code"] + ")");
+                        //reject()
                         return;
                     }
                     if (jx_common.isNull(res["content"])) {
                         jx_common.tip("无结果数据");
+                        //reject()
                         return;
                     }
                     let errorEntry = res["stat"]["stateList"][0]
                     if (errorEntry["code"] == "-100") {
                         jx_common.tip("服务器开小差!");
-                        reject()
+                        //reject()
                         return;
                     }
                     successFunc && (typeof successFunc == "function") && successFunc(res["content"][0], errorEntry, res["stat"])
@@ -93,14 +99,15 @@ export default {
                 },
                 error: function () {
                     errorFunc && (typeof errorFunc == "function") && errorFunc();
-                    reject()
-                    //return;
                     jx_common.tip("系统繁忙");
+                    //reject()
+                    return;
                 },
                 complete: function (XMLHttpRequest, status) {
                     if (status == 'timeout') { //超时,status还有success,error等值的情况
                         _jx_ajax_frame.abort();
                         jx_common.tip("系统超时");
+                        //reject()
                     }
                 }
             })

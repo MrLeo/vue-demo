@@ -71,7 +71,8 @@
                 defaultImg: '/static/img/logo_default_s.jpg',//默认图片地址
                 busy: false,
                 showshar: false,
-                showVideo: true
+                showVideo: true,
+                liveId: 0
             }
         },
         //计算属性
@@ -128,7 +129,22 @@
             }
         },
         //数据观察
-        watch: {},
+        watch: {
+            liveId(){
+                const _self = this
+                console.log('[Leo] => ','live id change')
+                let urls = _self.pushVideoUrls()
+                _self.showVideo = false
+                !!urls.length && !!urls[0] ? (()=> {
+                    _self.showVideo = true
+                    console.log('[Leo] => ','显示视频')
+                })() : (()=> {
+                    //jx_common.tip('视频出错了(>﹏<。)～呜呜呜……，换一个看看')
+                    _self.showVideo = false
+                    console.log('[Leo] => ','不显示视频')
+                })()
+            }
+        },
         //生命周期：组件准备好时的一个回调
         ready(){
             //const liveId = this.$route.query.id//接收?后面的查询参数
@@ -155,12 +171,12 @@
                 if (!!_self[currentRoute].hasNext) {
                     switch (currentRoute) {
                         case 'wonderfulList':
-                            _self.wonderfulList.pageNo = _self.wonderfulList.pageNo + 1
-                            _self.getWonderfulList()
+                            /*_self.wonderfulList.pageNo = _self.wonderfulList.pageNo + 1
+                             _self.getWonderfulList()*/
                             break;
                         case 'replayList':
-                            _self.replayList.pageNo = _self.replayList.pageNo + 1
-                            _self.getReplayList()
+                            /*_self.replayList.pageNo = _self.replayList.pageNo + 1
+                             _self.getReplayList()*/
                             break;
                     }
                     _self.busy = false;
@@ -169,14 +185,14 @@
             initAjax(id){
                 const _self = this
                 let promise = _self.getLiveRecord(id)
-                //                promise.then((json)=> {
-                //                    console.log('[Leo]get live record => ', json)
-                //                    document.title = json.liveTitle
-                //                    _self.setVideoInfo(json)
-                //                    _self.queryUserSnsCountInfo()
-                //                    _self.getWonderfulList()
-                //                    _self.getReplayList()
-                //                })
+                // promise.then((json)=> {
+                //     console.log('[Leo]get live record => ', json)
+                //     document.title = json.liveTitle
+                //     _self.setVideoInfo(json)
+                //     _self.queryUserSnsCountInfo()
+                //     _self.getWonderfulList()
+                //     _self.getReplayList()
+                // })
             },
             /**
              * 获取直播项信息
@@ -255,25 +271,20 @@
                         }
                         break;
                     case "直播":
-                        if (!!_self.video.pullStreamUrl)
-                            urls.push({
-                                src: _self.video.pullStreamUrl,
-                                type: 'application/x-mpegURL'
-                            })
+                        //                        if (!!_self.video.pullStreamUrl) {
+                        //                            urls.push({
+                        //                                src: _self.video.pullStreamUrl,
+                        //                                type: 'application/x-mpegURL'
+                        //                            })
+                        //                        }
+                        //TODO:测试直播HLS视频源播放
+                        urls.push({
+                            src: 'http://106.38.183.42:1863/198314229432587412.m3u8?buname=h5_nowlive&apptype=H5_android&vKey=6F652AE04342C0DFE9123DD92BD9C773013113671288199D8B99BCA9F87212F7B530A9B665DA5D06&stdfrom=test',
+                            type: 'application/x-mpegURL'
+                        })
                         break;
                     default:
                         break;
-                }
-                //TODO:测试直播HLS视频源播放
-                if (urls.length == 0) {
-                    /*urls = [{//测试直播源
-                     src: 'http://solutions.brightcove.com/jwhisenant/hls/apple/bipbop/bipbopall.m3u8',
-                     type: 'application/x-mpegURL'
-                     }]*/
-                    /*urls = [{//NOW直播源
-                        src: 'http://106.38.183.19:1863/739381776792138172.m3u8?buname=h5_nowlive&apptype=H5_android&vKey=4B22DC437B9AC56EB65A4D589F972B95E9879AA80858C3C03EFF93F93DCEA8DD0014CAC5E97CDD14&stdfrom=test',
-                        type: 'application/x-mpegURL'
-                    }]*/
                 }
                 return urls
             },
@@ -296,9 +307,13 @@
             changeVideo(id){
                 const _self = this
                 let userId = _self.video.userId
+                _self.liveId = id
+                _self.showVideo = false
                 let promise = _self.getLiveRecord(id)
                 promise.then((json)=> {
                     _self.setVideoInfo(json)
+                    if (json.liveTitle)
+                        document.title = json.liveTitle
                     _self.queryUserSnsCountInfo()
 
                     //_self.wonderfulList.pageNo = 1
@@ -322,7 +337,7 @@
     <div v-infinite-scroll="loadMore()" infinite-scroll-disabled="busy" infinite-scroll-distance="10">
         <div class="firstRecommend">
             <div class="vedioBox pos-re">
-                <template v-if="isShowVideo">
+                <template v-if="showVideo">
                     <v-video
                         v-bind:video-src="getVideoSrc"
                         v-bind:video-poster="video.liveCover"

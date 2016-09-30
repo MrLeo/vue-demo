@@ -34,7 +34,7 @@ const state = {
     //精彩推荐
     wonderfulList: {
         pageNo: 0, // 第几页
-        pageSize: 10, // 一页多少
+        pageSize: 6, // 一页多少
         totalCount: 0, // 共多少条
         hasNext: true, // 是否有下一页
         list: []
@@ -42,7 +42,7 @@ const state = {
     //Ta的回放
     replayList: {
         pageNo: 0, // 第几页
-        pageSize: 10, // 一页多少
+        pageSize: 6, // 一页多少
         totalCount: 0, // 共多少条
         hasNext: true, // 是否有下一页
         list: []
