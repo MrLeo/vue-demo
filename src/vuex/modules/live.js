@@ -68,8 +68,8 @@ const REMOVE_REPLAY_LIST = 'REMOVE_REPLAY_LIST'
 const mutations = {
     //添加video信息
     [SET_VIDEO_INFO](state, videoInfo) {
+        console.log('[Leo]video info => ', videoInfo)
         state.video.liveId = videoInfo.liveId; //直播ID
-        state.video.userId = videoInfo.userId; //用户ID
         state.video.roomId = videoInfo.roomId; //直播间ID
         state.video.liveCategoryCode = videoInfo.liveCategoryCode; //直播类别code
         state.video.liveCategoryName = videoInfo.liveCategoryName; //直播类别name
@@ -82,11 +82,16 @@ const mutations = {
         state.video.endDate = videoInfo.endDate; //结束时间
         state.video.onlineCount = videoInfo.onlineCount; //在线人数
         state.video.viewCount = videoInfo.viewCount; //观看次数
-        state.video.replayUrls = videoInfo.replayUrls; //回放地址
+
+        state.video.replayUrls.length>0 && state.video.replayUrls.splice(0, state.video.replayUrls.length)
+        if (videoInfo.replayUrls && videoInfo.replayUrls.length) {//回放地址
+            for (let url of videoInfo.replayUrls) state.video.replayUrls.push(url)
+        }
+
         state.video.pushStreamUrl = videoInfo.pushStreamUrl; //拉流地址
         state.video.pullStreamUrl = videoInfo.pullStreamUrl; //推流地址
-        state.video.userInfo = videoInfo.userInfo; //用户信息
-        state.video.liveConfig = videoInfo.liveConfig; //直播配置
+        state.video.userInfo = videoInfo.userInfo || {}; //用户信息
+        state.video.liveConfig = videoInfo.liveConfig || {}; //直播配置
     },
     //添加SNS信息
     [SET_SNS_INFO](state, snsInfo) {

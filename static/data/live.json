@@ -37,14 +37,14 @@
     "wonderfulList":[{
         "id":"111111",
         "img":"/static/img/logo_default_s.jpg",
-        "state":"直播",
+        "state":"START_LIVE",
         "liver":"AAA",
         "viewer":"1000",
         "title":"123456qwerty"
     },{
         "id":"2222222",
         "img":"/static/img/logo_default_s.jpg",
-        "state":"回放",
+        "state":"REPLAY_LIVE",
         "liver":"bbb",
         "viewer":"1000",
         "title":"123456qwerty"

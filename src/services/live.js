@@ -33,7 +33,7 @@ export default {
      * @example
      *      getLiveList({
  *          //userId: _self.video.userId,
- *          //liveStatus: ["直播", "回放"],
+ *          //liveStatus: ["START_LIVE", "REPLAY_LIVE"],
  *          //locationCityCode: _self.video.locationCityCode,
  *          pageNo: _self.replayList.pageNo + 1,
  *          pageSize: _self.replayList.pageSize
@@ -49,7 +49,7 @@ export default {
      * @example
      *      getLiveListByUserId({
  *          userId: _self.video.userId,
- *          liveStatus: ["回放"],
+ *          liveStatus: ["REPLAY_LIVE"],
  *          pageNo: _self.wonderfulList.pageNo + 1,
  *          pageSize: _self.wonderfulList.pageSize
  *      })

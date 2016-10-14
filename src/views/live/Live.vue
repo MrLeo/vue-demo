@@ -2,12 +2,12 @@
     import vVideo from 'components/Video'
     import vToload from 'components/toload'
     import {
-        setVideoInfo,
-        setSnsInfo,
-        addWonderfullList,
-        removeWonderfullList,
-        addReplayList,
-        removeReplayList
+            setVideoInfo,
+            setSnsInfo,
+            addWonderfullList,
+            removeWonderfullList,
+            addReplayList,
+            removeReplayList
     } from '../../vuex/actions'
     import _wap_config from 'utils/jx/config'
     import jx_ajax from 'utils/jx/ajax'
@@ -71,7 +71,7 @@
                 defaultImg: '/static/img/logo_default_s.jpg',//默认图片地址
                 busy: false,
                 showshar: false,
-                showVideo: true,
+                showVideo: false,
                 liveId: 0
             }
         },
@@ -83,7 +83,7 @@
              */
             showControls(){
                 const _self = this
-                if (_self.video.liveStatus == "回放") {
+                if (_self.video.liveStatus == "REPLAY_LIVE") {
                     return true
                 }
                 return false
@@ -94,7 +94,7 @@
              */
             showOnline(){
                 const _self = this
-                if (_self.video.liveStatus == "直播") {
+                if (_self.video.liveStatus == "START_LIVE") {
                     return true
                 }
                 return false
@@ -104,21 +104,6 @@
              */
             getVideoSrc(){
                 return this.pushVideoUrls()
-            },
-            /**
-             * 是否显示视频播放器
-             */
-            isShowVideo(){
-                const _self = this
-                let urls = _self.pushVideoUrls()
-                let showVideo = true
-                !!urls.length && !!urls[0] ? (()=> {
-                    showVideo = true
-                })() : (()=> {
-                    //jx_common.tip('视频出错了(>﹏<。)～呜呜呜……，换一个看看')
-                    showVideo = false
-                })()
-                return showVideo
             },
             /**
              * 头像地址转码
@@ -132,34 +117,41 @@
         watch: {
             liveId(){
                 const _self = this
-                console.log('[Leo] => ','live id change')
+                console.log('[Leo] => ', 'live id change', _self.liveId)
                 let urls = _self.pushVideoUrls()
                 _self.showVideo = false
                 !!urls.length && !!urls[0] ? (()=> {
                     _self.showVideo = true
-                    console.log('[Leo] => ','显示视频')
+                    console.log('[Leo] => ', '显示视频')
                 })() : (()=> {
                     //jx_common.tip('视频出错了(>﹏<。)～呜呜呜……，换一个看看')
                     _self.showVideo = false
-                    console.log('[Leo] => ','不显示视频')
+                    console.log('[Leo] => ', '不显示视频')
                 })()
             }
         },
-        //生命周期：组件准备好时的一个回调
-        ready(){
+        created(){
+            const _self = this
             //const liveId = this.$route.query.id//接收?后面的查询参数
-            const liveId = this.$route.params.id//接收/后面的路由参数
+            _self.liveId = this.$route.params.id//接收/后面的路由参数
+            console.log('[Leo]Live created => ', _self.liveId)
             router.go({
                 name: 'wonderfulList',
                 append: true
             })
-            this.initAjax(liveId)
+            this.initAjax(_self.liveId)
+        },
+        //生命周期：组件准备好时的一个回调
+        ready(){
         },
         //生命周期：组件即将被销毁时触发回调
         beforeDestroy(){
         },
         //实例方法
         methods: {
+            convertLiveCover(src){
+                return !!src ? (/^https?:.*/.test(src) ? src : _wap_config.imgUrl + src) : this.defaultImg
+            },
             /**
              * 无限滚动
              * https://github.com/ElemeFE/vue-infinite-scroll
@@ -185,14 +177,15 @@
             initAjax(id){
                 const _self = this
                 let promise = _self.getLiveRecord(id)
-                // promise.then((json)=> {
-                //     console.log('[Leo]get live record => ', json)
-                //     document.title = json.liveTitle
-                //     _self.setVideoInfo(json)
-                //     _self.queryUserSnsCountInfo()
-                //     _self.getWonderfulList()
-                //     _self.getReplayList()
-                // })
+                _self.getWonderfulList()
+                /*promise.then((json)=> {
+                 console.log('[Leo]get live record => ', json)
+                 document.title = json.liveTitle
+                 _self.setVideoInfo(json)
+                 _self.queryUserSnsCountInfo()
+                 _self.getWonderfulList()
+                 _self.getReplayList()
+                 })*/
             },
             /**
              * 获取直播项信息
@@ -200,93 +193,146 @@
              */
             getLiveRecord(id){
                 const _self = this
-                return jx_ajax.get(_wap_config.api, {
-                    _mt: 'live.getLiveRecord',
-                    liveId: id
-                }, (json)=> {
-                    document.title = json.liveTitle
-                    _self.setVideoInfo(json)
-                    _self.queryUserSnsCountInfo()
-                    _self.getWonderfulList()
-                    _self.getReplayList()
-                })
+                try {
+                    return jx_ajax.get(_wap_config.api, {
+                        _mt: 'live.getLiveRecord',
+                        liveId: id
+                    }, (json)=> {
+                        console.log('[Leo]getLiveRecord => ', json)
+                        if (json) {
+                            document.title = json.liveTitle
+                            json.liveCover = !!json.liveCover ? (/^https?:.*/.test(json.liveCover) ? json.liveCover : _wap_config.imgUrl + json.liveCover) : _self.defaultImg
+                            _self.setVideoInfo(json)
+                            setTimeout(_self.isShowVideo, 0)
+                        }
+                        _self.queryUserSnsCountInfo()
+                        _self.getReplayList()
+                        /*_self.getWonderfulList()*/
+                    })
+                } catch (e) {
+                    jx_common.tip('无法获取直播信息')
+                }
             },
             /**
              * ajax获取用户相关的SNS数据
              */
             queryUserSnsCountInfo(){
-                const _self = this
-                return jx_ajax.get(_wap_config.api, {
-                    _mt: 'snscenter.queryUserSnsCountInfo',
-                    theUserId: _self.video.userId
-                }, res=>_self.setSnsInfo(res))//.then((res)=>_self.setSnsInfo(res))
+                try {
+                    const _self = this
+                    return jx_ajax.get(_wap_config.api, {
+                        _mt: 'snscenter.queryUserSnsCountInfo',
+                        theUserId: _self.video.userInfo.userId
+                    }, res=> {
+                        if (res) {
+                            _self.setSnsInfo(res)
+                        }
+                    })//.then((res)=>_self.setSnsInfo(res))
+                } catch (e) {
+                    jx_common.tip('获取关注信息失败')
+                }
             },
             /**
              * ajax获取推荐直播列表
              */
             getWonderfulList(){
-                const _self = this
-                let liveRecordAPIPageQuery = {
-                    //userId: _self.video.userId,
-                    //liveStatus: ["直播", "回放"],
-                    //locationCityCode: _self.video.locationCityCode,
-                    pageNo: _self.wonderfulList.pageNo,
-                    pageSize: _self.wonderfulList.pageSize
+                try {
+                    const _self = this
+                    let liveRecordAPIPageQuery = {
+                        pageNo: _self.wonderfulList.pageNo,
+                        pageSize: _self.wonderfulList.pageSize
+                    }
+                    return jx_ajax.get(_wap_config.api, {
+                        _mt: 'live.getLiveList',
+                        liveRecordAPIPageQuery: JSON.stringify(liveRecordAPIPageQuery)
+                    }, json=> {
+                        if (json) {
+                            _self.addWonderfullList(json)
+                        }
+                    })//.then((json)=>_self.addWonderfullList(json))
+                } catch (e) {
+                    jx_common.tip('无法获取精彩推荐')
                 }
-                return jx_ajax.get(_wap_config.api, {
-                    _mt: 'live.getLiveList',
-                    liveRecordAPIPageQuery: JSON.stringify(liveRecordAPIPageQuery)
-                }, json=>_self.addWonderfullList(json))//.then((json)=>_self.addWonderfullList(json))
             },
             /**
              * ajax获取回放列表
              */
             getReplayList(){
-                const _self = this
-                let liveRecordListQuery = {
-                    userId: _self.video.userId,
-                    liveStatus: ["回放"],
-                    pageNo: _self.replayList.pageNo,
-                    pageSize: _self.replayList.pageSize
+                try {
+                    const _self = this
+                    let liveRecordListQuery = {
+                        userId: _self.video.userInfo.userId,
+                        liveStatus: ["REPLAY_LIVE"],
+                        pageNo: _self.replayList.pageNo,
+                        pageSize: _self.replayList.pageSize
+                    }
+                    return jx_ajax.get(_wap_config.api, {
+                        _mt: 'live.getLiveListByUserId',
+                        liveRecordListQuery: JSON.stringify(liveRecordListQuery)
+                    }, json=> {
+                        if (json) {
+                            _self.addReplayList(json)
+                        }
+                    })//.then((json)=>_self.addReplayList(json))
+                } catch (e) {
+                    jx_common.tip('无法获取回放列表')
                 }
-                return jx_ajax.get(_wap_config.api, {
-                    _mt: 'live.getLiveListByUserId',
-                    liveRecordListQuery: JSON.stringify(liveRecordListQuery)
-                }, json=>_self.addReplayList(json))//.then((json)=>_self.addReplayList(json))
+            },
+            /**
+             * 是否显示视频播放器
+             */
+            isShowVideo(){
+                const _self = this
+                let urls = _self.pushVideoUrls()
+                _self.showVideo = false
+                !!urls.length && !!urls[0] ? (()=> {
+                    _self.showVideo = true
+                    console.log('[Leo]showVideo => ', '显示视频')
+                })() : (()=> {
+                    //jx_common.tip('视频出错了(>﹏<。)～呜呜呜……，换一个看看')
+                    _self.showVideo = false
+                    console.log('[Leo]showVideo => ', '不显示视频')
+                })()
             },
             /**
              * 组装视频地址数组
              */
             pushVideoUrls(){
-                const _self = this;
-                let urls = []
-                switch (_self.video.liveStatus) {
-                    case "回放":
-                        //urls = _self.video.replayUrls
-                        for (let url of _self.video.replayUrls) {
-                            urls.push({
-                                src: url,
-                                type: 'video/mp4'
-                            })
-                        }
-                        break;
-                    case "直播":
-                        //                        if (!!_self.video.pullStreamUrl) {
-                        //                            urls.push({
-                        //                                src: _self.video.pullStreamUrl,
-                        //                                type: 'application/x-mpegURL'
-                        //                            })
-                        //                        }
-                        //TODO:测试直播HLS视频源播放
-                        urls.push({
-                            src: 'http://106.38.183.42:1863/198314229432587412.m3u8?buname=h5_nowlive&apptype=H5_android&vKey=6F652AE04342C0DFE9123DD92BD9C773013113671288199D8B99BCA9F87212F7B530A9B665DA5D06&stdfrom=test',
-                            type: 'application/x-mpegURL'
-                        })
-                        break;
-                    default:
-                        break;
+                try {
+                    const _self = this;
+                    let urls = []
+                    console.log('[Leo]pushVideoUrls:liveStatus => ', _self.video.liveStatus)
+                    switch (_self.video.liveStatus) {
+                        case "REPLAY_LIVE":
+                            //urls = _self.video.replayUrls
+                            for (let url of _self.video.replayUrls) {
+                                urls.push({
+                                    src: url,
+                                    type: 'video/mp4'
+                                })
+                            }
+                            break;
+                        case "START_LIVE":
+                            if (!!_self.video.pullStreamUrl) {
+                                urls.push({
+                                    src: _self.video.pullStreamUrl,
+                                    type: 'application/x-mpegURL'
+                                })
+                            }
+                            //TODO:测试直播HLS视频源播放 https://now.qq.com/h5/index.html
+                            /*urls.push({
+                             src: 'http://106.38.183.21:1863/182971339236992842.m3u8?buname=h5_nowlive&apptype=H5_android&vKey=3492920EF6C3DC6A34FADC6709CDD14DA6F149CAF77E2C8172A6CA98834FA1959D1269BFEB4C1202&stdfrom=test',
+                             type: 'application/x-mpegURL'
+                             })*/
+                            break;
+                        default:
+                            break;
+                    }
+                    console.log('[Leo]组装后的URLS => ', urls)
+                    return urls
+                } catch (e) {
+                    jx_common.tip('视频地址解析失败')
+                    return []
                 }
-                return urls
             },
             /**
              * 分享
@@ -304,14 +350,16 @@
         },
         //事件监听
         events: {
-            changeVideo(id){
+            changeVideo(liveInfo){
+                if (this.$route.params.id == liveInfo.liveId) return //没有改变主播
                 const _self = this
-                let userId = _self.video.userId
-                _self.liveId = id
                 _self.showVideo = false
-                let promise = _self.getLiveRecord(id)
+                let promise = _self.getLiveRecord(liveInfo.liveId)
                 promise.then((json)=> {
+                    json.liveCover = !!json.liveCover ? (/^https?:.*/.test(json.liveCover) ? json.liveCover : _wap_config.imgUrl + json.liveCover) : _self.defaultImg
                     _self.setVideoInfo(json)
+                    _self.liveId = liveInfo.liveId
+                    router.go({path: '/live/' + liveInfo.liveId + '/' + liveInfo.type})
                     if (json.liveTitle)
                         document.title = json.liveTitle
                     _self.queryUserSnsCountInfo()
@@ -319,7 +367,7 @@
                     //_self.wonderfulList.pageNo = 1
                     //_self.getWonderfulList()
 
-                    if (userId != json.userId) {
+                    if (_self.video.userInfo && _self.video.userInfo.userId != json.userInfo.userId) {
                         _self.replayList.pageNo = 1
                         _self.removeReplayList()
                         _self.getReplayList()
@@ -339,9 +387,9 @@
             <div class="vedioBox pos-re">
                 <template v-if="showVideo">
                     <v-video
-                        v-bind:video-src="getVideoSrc"
-                        v-bind:video-poster="video.liveCover"
-                        v-bind:video-controls="showControls">
+                            v-bind:video-src="getVideoSrc"
+                            v-bind:video-poster="video.liveCover"
+                            v-bind:video-controls="showControls">
                     </v-video>
                 </template>
                 <template v-else>
@@ -354,7 +402,7 @@
                 <h3 v-cloak>{{video.liveTitle}}</h3>
                 <span class="touPic"><img :src="getAvatarPicUrl"/></span>
                 <span class="liver" v-cloak>{{video.userInfo&&video.userInfo.nickname}}<i
-                    :class="video.userInfo&&(!!video.userInfo.gender?'boy':'girl')"></i></span><br/>
+                        :class="video.userInfo&&(!!video.userInfo.gender?'boy':'girl')"></i></span><br/>
                 <span class="focus">关注 <i v-text="video.followingCount"></i></span>
                 <span class="fans">粉丝 <i v-text="video.fansCount"></i></span>
                 <div class="shar" @click="toshar"><i></i><span>分享</span></div>
@@ -502,7 +550,7 @@
     .toshar {
         width: 100%;
         height: 100%;
-        z-index: 50;
+        z-index: 9999999999;
         position: fixed;
         top: 0;
         left: 0;

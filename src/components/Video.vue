@@ -48,6 +48,7 @@
         },
         watch: {
             videoSrc(val, oldVal){
+                console.log('[Leo]watch video src => ',val , oldVal)
                 const _self = this
                 if (!val)return
                 if (!!_self.videoPlayer) {
@@ -86,27 +87,31 @@
         },
         ready(){
             const _self = this
-            if (!!_self.videoPlayer) {
-                let srcs = []
-                for (let src of _self.videoSrc) {
-                    srcs.push({src: src})
+            try {
+                if (!!_self.videoPlayer) {
+                    let srcs = []
+                    for (let src of _self.videoSrc) {
+                        srcs.push({src: src})
+                    }
+                    console.log('[Leo]视频地址 => ', srcs)
+                    _self.videoPlayer.src(srcs)
+
+                    _self.setVideoControlBar(_self.videoPlayer)
+
+                    _self.videoPlayer.play()
+                } else {
+                    /*console.log('ready',_self.videoSrc[0],/\.m3u8\??/.test(_self.videoSrc[0]))
+                     if (!/\.m3u8\??/.test(_self.videoSrc[0])) {
+                     setTimeout(function () {
+                     _self.initVideo()
+                     }, 0)
+                     }*/
+                    setTimeout(function () {
+                        _self.initVideo()
+                    }, 0)
                 }
-                console.log('[Leo]视频地址 => ', srcs)
-                _self.videoPlayer.src(srcs)
-
-                _self.setVideoControlBar(_self.videoPlayer)
-
-                _self.videoPlayer.play()
-            } else {
-                /*console.log('ready',_self.videoSrc[0],/\.m3u8\??/.test(_self.videoSrc[0]))
-                 if (!/\.m3u8\??/.test(_self.videoSrc[0])) {
-                 setTimeout(function () {
-                 _self.initVideo()
-                 }, 0)
-                 }*/
-                setTimeout(function () {
-                    _self.initVideo()
-                }, 0)
+            } catch (e) {
+                jx_common.tip('出问题了(>﹏<。)～呜呜呜……')
             }
         },
         beforeDestroy(){
@@ -122,128 +127,136 @@
                      * https://github.com/videojs/video.js/blob/stable/docs/guides/options.md
                      * http://coderlt.coding.me/2016/02/26/videojs-readme/
                      */
+
+                    try {
                         //videojs.options.flash.swf = require('video.js/dist/video-js.swf')
-
-                    let videoPlayer = document.getElementById('videoPlayer')
-                    if (!videoPlayer)return;
-                    _self.videoPlayer = videojs(videoPlayer, {
-                        techOrder: ["html5", "flash"], //["flash", "html5"], //
-                        controls: true, //控制栏
-                        inactivityTimeout: 0,
-                        autoplay: true, //自动播放
-                        preload: "auto", //预加载
-                        loop: true //循环播放
-                        //poster: require('assets/img/logo_default.png'), //视频海报
-                        /*children: {
-                         posterImage: false,
-                         textTrackDisplay: false,
-                         loadingSpinner: false,
-                         bigPlayButton: false,
-                         controlBar: {
-                         playToggle: false,
-                         fullscreenToggle: false,
-                         volumeMenuButton: false,
-                         currentTimeDisplay: false,
-                         timeDivider: false,
-                         durationDisplay: false,
-                         remainingTimeDisplay: false,
-                         liveDisplay: false,
-                         customControlsSpacer: false,
-                         chaptersButton: false,
-                         subtitlesButton: false,
-                         captionsButton: false,
-                         MuteToggle: false,
-                         progressControl: {
-                         keepTooltipsInside: false,
-                         seekBar: {
-                         loadProgressBar: false,
-                         playProgressBar: false,
-                         seekHandle: false,
-                         mouseTimeDisplay: false
-                         }
-                         }
-                         },
-                         errorDisplay: false,
-                         textTrackSettings: false
-                         }*/
-                    });
-
-                    /**
-                     * 播放器插件
-                     * @param options
-                     */
-                    /*function examplePlugin(options) {
-                     this.on('play', function (e) {
-                     console.log('开始/恢复播放');
-                     });
-                     }
-                     videojs.plugin('examplePlugin', examplePlugin);
-                     _self.videoPlayer.examplePlugin({
-                     exampleOption: true
-                     });*/
-
-                    /**
-                     * 准备就绪
-                     */
-                    _self.videoPlayer.ready(function () {
-                        var thisPlayer = this
-                        //console.log('%c[Leo]thisPlayer=>', 'color:red', thisPlayer)
+                        let videoPlayer = document.getElementById('videoPlayer')
+                        if (!videoPlayer)return;
+                        _self.videoPlayer = videojs(videoPlayer, {
+                            techOrder: ["html5", "flash"], //["flash", "html5"], //
+                            controls: true, //控制栏
+                            inactivityTimeout: 0,
+                            autoplay: false, //自动播放
+                            preload: "auto", //预加载
+                            loop: true //循环播放
+                            //poster: require('assets/img/logo_default.png'), //视频海报
+                            /*children: {
+                             posterImage: false,
+                             textTrackDisplay: false,
+                             loadingSpinner: false,
+                             bigPlayButton: false,
+                             controlBar: {
+                             playToggle: false,
+                             fullscreenToggle: false,
+                             volumeMenuButton: false,
+                             currentTimeDisplay: false,
+                             timeDivider: false,
+                             durationDisplay: false,
+                             remainingTimeDisplay: false,
+                             liveDisplay: false,
+                             customControlsSpacer: false,
+                             chaptersButton: false,
+                             subtitlesButton: false,
+                             captionsButton: false,
+                             MuteToggle: false,
+                             progressControl: {
+                             keepTooltipsInside: false,
+                             seekBar: {
+                             loadProgressBar: false,
+                             playProgressBar: false,
+                             seekHandle: false,
+                             mouseTimeDisplay: false
+                             }
+                             }
+                             },
+                             errorDisplay: false,
+                             textTrackSettings: false
+                             }*/
+                        });
 
                         /**
-                         * player控制
+                         * 播放器插件
+                         * @param options
                          */
-                        thisPlayer.volume(100 / 100);
-                        thisPlayer.playbackRate(1);
-                        thisPlayer.fluid(false);
-                        thisPlayer.isFullscreen(false);
-
-                        _self.setVideoControlBar(thisPlayer)
-
-                        //thisPlayer.muted(true);
-
-                        /*thisPlayer.src({
-                         type: "rtmp/mp4",
-                         src: "rtmp://pull99.a8.com/live/" + liveVideo.liveid
+                        /*function examplePlugin(options) {
+                         this.on('play', function (e) {
+                         console.log('开始/恢复播放');
                          });
-                         thisPlayer.poster(liveVideo.portrait);*/
+                         }
+                         videojs.plugin('examplePlugin', examplePlugin);
+                         _self.videoPlayer.examplePlugin({
+                         exampleOption: true
+                         });*/
 
-                        thisPlayer.play();
-                        thisPlayer.exitFullscreen();
-                        thisPlayer.exitFullWindow();
-                        //H5视频全屏设置：http://stackoverflow.com/questions/3699552/html5-inline-video-on-iphone-vs-ipad-browser
-                    });
-                    /**
-                     * 开始或恢复播放
-                     */
-                    _self.videoPlayer.on('play', function () {
-                        console.log('开始/恢复播放')
-                    })
-                    /**
-                     * 检测播放时间
-                     */
-                    _self.videoPlayer.on('timeupdate', function () {
-                        //console.log(`当前播放时间：${_self.videoPlayer.currentTime()}`)
-                        if (_self.videoPlayer.duration() != 0 && _self.videoPlayer.currentTime() === _self.videoPlayer.duration()) {
+                        /**
+                         * 准备就绪
+                         */
+                        _self.videoPlayer.ready(function () {
+                            var thisPlayer = this
+                            //console.log('%c[Leo]thisPlayer=>', 'color:red', thisPlayer)
+
+                            /**
+                             * player控制
+                             */
+                            thisPlayer.volume(100 / 100);
+                            thisPlayer.playbackRate(1);
+                            thisPlayer.fluid(false);
+                            thisPlayer.isFullscreen(false);
+
+                            _self.setVideoControlBar(thisPlayer)
+
+                            //thisPlayer.muted(true);
+
+                            /*thisPlayer.src({
+                             type: "rtmp/mp4",
+                             src: "rtmp://pull99.a8.com/live/" + liveVideo.liveid
+                             });
+                             thisPlayer.poster(liveVideo.portrait);*/
+                            try {
+                                thisPlayer.play();
+                            } catch (e) {
+                                console.log('[Leo]play error => ', e)
+                                jx_common.tip('无法播放该视频')
+                            }
+                            thisPlayer.exitFullscreen();
+                            thisPlayer.exitFullWindow();
+                            //H5视频全屏设置：http://stackoverflow.com/questions/3699552/html5-inline-video-on-iphone-vs-ipad-browser
+                        });
+                        /**
+                         * 开始或恢复播放
+                         */
+                        _self.videoPlayer.on('play', function () {
+                            console.log('开始/恢复播放')
+                        })
+                        /**
+                         * 检测播放时间
+                         */
+                        _self.videoPlayer.on('timeupdate', function () {
+                            //console.log(`当前播放时间：${_self.videoPlayer.currentTime()}`)
+                            if (_self.videoPlayer.duration() != 0 && _self.videoPlayer.currentTime() === _self.videoPlayer.duration()) {
+                                console.log('视频播放结束')
+                            }
+                        })
+                        /**
+                         * 暂停播放
+                         */
+                        _self.videoPlayer.on('pause', function () {
+                            console.log('暂停播放')
+                        })
+                        /**
+                         * 播放结束
+                         */
+                        _self.videoPlayer.ended(function () {
                             console.log('视频播放结束')
-                        }
-                    })
-                    /**
-                     * 暂停播放
-                     */
-                    _self.videoPlayer.on('pause', function () {
-                        console.log('暂停播放')
-                    })
-                    /**
-                     * 播放结束
-                     */
-                    _self.videoPlayer.ended(function () {
-                        console.log('视频播放结束')
-                    })
+                        })
+                    } catch (e) {
+                        jx_common.tip('无法播放该视频')
+                    }
                 });
             },
             setVideoControlBar(player){
                 let _self = this
-                console.log('[Leo]show controls => ', _self.videoControls)
+                //console.log('[Leo]show controls => ', _self.videoControls)
                 //console.log('%c[Leo]controlBar=>', 'color:red', player.controlBar)
                 player.controlBar.fullscreenToggle.show()//全屏
                 player.controlBar.liveDisplay.hide()//直播标识
